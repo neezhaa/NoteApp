@@ -48,10 +48,11 @@ const Actions = ({onSearch}) => {
             </div>
           </div>
         </div>
-        <button className="action-button edit" title="Edit">
+        <button className="action-button edit" title="Edit" disabled>
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" className="main-grid-item-icon" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2">
-            <path d="M12 20h9" />
-            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+              <polyline points="21 8 21 21 3 21 3 8" />
+              <rect height="5" width="22" x="1" y="3" />
+              <line x1="10" x2="14" y1="12" y2="12" />
           </svg>
         </button>
         <button className="action-button grid active" title="Grid View">

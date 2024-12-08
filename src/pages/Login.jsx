@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-// import 'bootstrap/dist/css/bootstrap.min.css';
 import img from '../icon.svg';
 
 function Login(props) {
-    const [cin, setCin] = useState("JK42338");
-    const [password, setPassword] = useState("123456");
+    const [cin, setCin] = useState("");
+    const [password, setPassword] = useState("");
 
     const handleSubmit = async(e) => {  
         e.preventDefault();

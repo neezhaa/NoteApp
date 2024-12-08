@@ -12,6 +12,7 @@ const AllNotes = () => {
     const [users, setUsers] = useState([]);
 
 
+    const [alert, setAlert] = useState({mssg: '', type: ''});
 
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
@@ -27,7 +28,9 @@ const AllNotes = () => {
           setNotes(res.data);
           setAllNotes(res.data);
       } catch (error) {
+        console.log(error);          
           console.error('Error fetching notes:', error);
+      }finally{
       }
   };
 
@@ -66,7 +69,9 @@ const AllNotes = () => {
             headers: { Authorization: `Bearer ${token}` }, 
         });
         setNotes(notes.filter((note)=> note.id !== id));
+        setAlert({mssg: 'Note deleted successfully!', type: 'success'});
     } catch(e){
+        setAlert({mssg: 'Failed to delete note!', type: 'error'})
         console.error('Failed to delete note:', e);
     }
   };
@@ -88,10 +93,12 @@ const AllNotes = () => {
           Authorization : `Bearer ${token}`,
         },
       });
+      setAlert({mssg: 'Note updated successfully!', type: 'success'});
       console.log('updated successfully',  response.data);
       setIsClicked(false);
       getData();
     }catch(e){
+      setAlert({mssg: 'Failed to update note!', type: 'error'})
       console.log('Error updating the note',e);
     }
     
@@ -113,6 +120,29 @@ const AllNotes = () => {
     // }
   };
 
+  useEffect(() => {
+    if (alert.mssg) {
+      const timer = setTimeout(() => {
+        setAlert({ mssg: '', type: '' });
+      }, 3000); 
+  
+      return () => clearTimeout(timer);
+    }
+  }, [alert]);
+
+  function handleSharedWith(e){
+    const userId = parseInt(e.target.getAttribute('value'), 10);
+    if (!shared_with.includes(userId)) {
+        setShared_with((prev) => [...prev, userId]);
+    }
+
+  }
+
+  function showSelectUsers(){
+    document.querySelector('.selectUsers').style.visibility = 'visible'
+  }
+  
+
 
   return (
     <div className="app-container">
@@ -120,9 +150,10 @@ const AllNotes = () => {
       <div className="app-content">
         <Header />
         <Actions onSearch={handleSearch} />
+
         <div className='main-section'>
-            {notes.map((note) => (
-                <div key={note.id} className='notes' onClick={() => handleClickNote(note.id)}>
+            {notes.map((note, index) => (
+                <div key={note.id || index} className='notes' onClick={(e) =>{e.stopPropagation(); handleClickNote(note.id)}}>
                     <button className="delete-button" onClick={(e) => {e.stopPropagation();
                                                                         deleteNote(note.id);
                                                                     }}>
@@ -138,13 +169,14 @@ const AllNotes = () => {
                     </div>  
                     <div className='shared-with'>{ note.shared_with.map((user, index) => (
                       <>
-                        <span className="users"  key={index}>{user.last_name[0]}{user.first_name[0]}</span>
+                        <span className="users"  key={user.id}>{user.last_name[0]}{user.first_name[0]}</span>
                         <span className="users-title"  key={index}>{user.last_name} {user.first_name}</span>
                       </>
                       ))}</div>
                 </div>
             ))}
         </div>
+        
         {isClicked && (
             <div className="overlay" onClick={overlayClick}>
                 <div className="note-create">
@@ -153,12 +185,14 @@ const AllNotes = () => {
                         <textarea className="cnt" placeholder="Edit note description here" value={content} onChange={(e) => setContent(e.target.value)} />
                     </div>
                     <div className="select-users">
-                        <label>Shared with: </label>
-                        <select multiple onChange={(e) => setShared_with([...e.target.selectedOptions].map(opt => opt.value))}>
+                        <label onClick={showSelectUsers} className='shared'> Shared with: </label>
+                        <div className='selectUsers' multiple >
                             {users.map((user, index) => (
-                                <option key={index} value={user.id}>{user.last_name} {user.first_name}</option>
+                                <option key={user.id || index} value={user.id} className='optionUser' onClick={handleSharedWith}>
+                                  {user.last_name} {user.first_name}
+                                </option>
                             ))}
-                        </select>
+                        </div>
                     </div>
                     <div className="note-buttons">
                         <button type="submit" className="note-button clear" onClick={handleClear}>Clear</button>
@@ -168,9 +202,34 @@ const AllNotes = () => {
             </div>
           )}
       </div>
+      {alert.mssg && (
+        <div className={`alert ${alert.type} ${alert.mssg ? '' : 'hidden'}`}>
+          
+          <div className='alert-mssg'>{alert.mssg}</div>
+          <div className='alert-close' onClick={() => setAlert({ mssg: '', type: '' })}>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" className="main-grid-item-icon" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2">
+              <line x1="18" x2="6" y1="6" y2="18" />
+              <line x1="6" x2="18" y1="6" y2="18" />
+            </svg>
+          
+          </div>
+        </div>
+      )} 
     </div>
 
   );
 };
 
 export default AllNotes;
+
+
+
+
+
+
+
+
+
+
+
+
