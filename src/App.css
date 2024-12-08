@@ -998,7 +998,7 @@ html {
   left: 100%;
   top: 30%;
   padding: 10px;
-  color: black;
+  color: #fff;
   background: var(--action-color);
   font-size: 11px;
   border-radius: 4px;
